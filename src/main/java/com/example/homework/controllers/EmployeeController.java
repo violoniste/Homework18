@@ -2,10 +2,12 @@ package com.example.homework.controllers;
 
 import com.example.homework.services.EmployeeService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping(path = "/employee")
 public class EmployeeController {
     private final EmployeeService employeeService;
 
@@ -13,37 +15,22 @@ public class EmployeeController {
         this.employeeService = service;
     }
 
-    @GetMapping(path = "/employee/add")
+    @GetMapping(path = "/add")
     public Object add(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
-        try {
-            return employeeService.add(firstName, lastName);
-        }
-        catch (RuntimeException e) {
-            return e;
-        }
+        return employeeService.add(firstName, lastName);
     }
 
-    @GetMapping(path = "/employee/remove")
+    @GetMapping(path = "/remove")
     public Object remove(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
-        try {
-            return employeeService.remove(firstName, lastName);
-        }
-        catch (RuntimeException e) {
-            return e;
-        }
+        return employeeService.remove(firstName, lastName);
     }
 
-    @GetMapping(path = "/employee/find")
+    @GetMapping(path = "/find")
     public Object find(@RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
-        try {
-            return employeeService.find(firstName, lastName);
-        }
-        catch (RuntimeException e) {
-            return e;
-        }
+        return employeeService.find(firstName, lastName);
     }
 
-    @GetMapping(path = "/employee/list")
+    @GetMapping(path = "/list")
     public Object list() {
         return employeeService.list();
     }
