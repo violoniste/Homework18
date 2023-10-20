@@ -4,51 +4,52 @@ import com.example.homework.exceptions.EmployeeAlreadyAddedException;
 import com.example.homework.exceptions.EmployeeNotFoundException;
 import com.example.homework.exceptions.EmployeeStorageIsFullException;
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.*;
 
 @org.springframework.stereotype.Service
 public class EmployeeService {
     private static final int MAX = 5;
-    private final ArrayList<Employee> employees = new ArrayList<>();
+    private final Map<String, Employee> employees = new HashMap<>();
 
     public Employee add(String firstName, String lastName) {
         if (employees.size() >= MAX)
             throw new EmployeeStorageIsFullException();
 
-        for (Employee e: employees) {
-            if (Objects.equals(e.getFirstName(), firstName) && e.getLastName().equals(lastName)) {
-                throw new EmployeeAlreadyAddedException();
-            }
-        }
+        if (find(firstName, lastName) != null)
+            throw new EmployeeAlreadyAddedException();
 
         Employee employee = new Employee(firstName, lastName);
-        employees.add(employee);
+        employees.put(getKey(firstName, lastName), employee);
         return employee;
     }
 
     public Employee remove(String firstName, String lastName) {
-        for (Employee e: employees) {
-            if (Objects.equals(e.getFirstName(), firstName) && e.getLastName().equals(lastName)) {
-                employees.remove(e);
-                return e;
-            }
-        }
+        Employee employee = find(firstName, lastName);
+        if (employee == null)
+            throw new EmployeeNotFoundException();
 
-        throw new EmployeeNotFoundException();
+        employees.remove(getKey(firstName, lastName));
+        return employee;
     }
 
     public Employee find(String firstName, String lastName) {
-        for (Employee e: employees) {
-            if (Objects.equals(e.getFirstName(), firstName) && e.getLastName().equals(lastName)) {
-                return e;
-            }
-        }
+        Employee employee = employees.get(getKey(firstName, lastName));
+        if (employee == null)
+            throw new EmployeeNotFoundException();
 
-        throw new EmployeeNotFoundException();
+        return employee;
     }
 
-    public ArrayList<Employee> list() {
-        return employees;
+    public List<Employee> list() {
+        Set<String> keys = employees.keySet();
+        List<Employee> list = new ArrayList<>();
+        for (String k : keys)
+            list.add(employees.get(k));
+
+        return list;
+    }
+
+    private String getKey(String firstName, String lastName) {
+        return firstName + lastName;
     }
 }
